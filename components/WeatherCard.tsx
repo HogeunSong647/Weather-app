@@ -1,11 +1,11 @@
 import { DailyWeather } from '@/types/weather';
+import { getCharacterReaction } from '@/lib/character';
 
 interface WeatherCardProps {
   weather: DailyWeather;
-  isHighlight?: boolean; // 내일 날씨 강조용
+  isHighlight?: boolean;
 }
 
-// 날씨 상태별 이모지 매핑
 const getWeatherEmoji = (description: string): string => {
   const map: { [key: string]: string } = {
     맑음: '☀️',
@@ -22,8 +22,8 @@ const getWeatherEmoji = (description: string): string => {
 export default function WeatherCard({ weather, isHighlight = false }: WeatherCardProps) {
   const emoji = getWeatherEmoji(weather.description);
   const popPercent = Math.round(weather.pop * 100);
+  const character = getCharacterReaction(weather);
 
-  // 강조 카드 (내일 날씨)
   if (isHighlight) {
     return (
       <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-2xl">
@@ -33,6 +33,17 @@ export default function WeatherCard({ weather, isHighlight = false }: WeatherCar
             <p className="text-2xl font-bold text-gray-800">{weather.dayName}</p>
           </div>
           <div className="text-7xl">{emoji}</div>
+        </div>
+
+        {/* 캐릭터 반응 */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-orange-200 rounded-xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <div className="text-5xl">{character.emoji}</div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-800 mb-1">{character.message}</p>
+              <p className="text-sm text-gray-600">{character.outfit}</p>
+            </div>
+          </div>
         </div>
 
         {weather.willRain && (
@@ -46,12 +57,24 @@ export default function WeatherCard({ weather, isHighlight = false }: WeatherCar
           <span className="text-3xl text-blue-500 mb-1">{weather.tempMin}°</span>
         </div>
         
-        <p className="text-lg text-gray-600">{weather.description}</p>
+        <p className="text-lg text-gray-600 mb-3">{weather.description}</p>
+
+        {/* 체감온도 + 습도 */}
+        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-xs text-gray-500 mb-1">체감온도</p>
+            <p className="text-lg font-semibold text-gray-700">🌡 {weather.feelsLike}°</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-500 mb-1">습도</p>
+            <p className="text-lg font-semibold text-gray-700">💧 {weather.humidity}%</p>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // 일반 카드 (이번 주 예보)
+  // 일반 카드 (작은 카드는 캐릭터 이모지만 추가)
   return (
     <div className="bg-white/90 backdrop-blur rounded-xl p-4 shadow-lg hover:scale-105 transition-transform">
       <p className="text-sm font-semibold text-gray-700 mb-1">
@@ -61,7 +84,8 @@ export default function WeatherCard({ weather, isHighlight = false }: WeatherCar
         {weather.date.slice(5)}
       </p>
       
-      <div className="text-4xl mb-3 text-center">{emoji}</div>
+      <div className="text-4xl mb-2 text-center">{emoji}</div>
+      <div className="text-2xl mb-2 text-center">{character.emoji}</div>
       
       <div className="text-center mb-2">
         <span className="text-red-500 font-bold">{weather.tempMax}°</span>
