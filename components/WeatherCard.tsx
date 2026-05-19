@@ -29,7 +29,7 @@ export default function WeatherCard({ weather, isHighlight = false }: WeatherCar
       <div className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm text-gray-500">내일</p>
+            <p className="text-sm text-gray-500">오늘</p>
             <p className="text-2xl font-bold text-gray-800">{weather.dayName}</p>
           </div>
           <div className="text-7xl">{emoji}</div>
